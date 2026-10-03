@@ -1,0 +1,9 @@
+{
+  "name": "magnum-key-portal",
+  "version": "1.0.0",
+  "description": "Free API key portal gateway for anthracite-org/magnum-v4-72b (own keys, OpenAI-compatible)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

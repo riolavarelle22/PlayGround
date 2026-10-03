@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Magnum v4 72B — Free API Key Portal</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Arial,sans-serif;max-width:920px;margin:24px auto;padding:0 16px;background:#0b0e14;color:#e6e9f0;line-height:1.5}
+header{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.badge{background:#1d2b4a;border:1px solid #33415e;border-radius:999px;padding:4px 12px;font-size:13px}
+.card{background:#151b28;border:1px solid #263049;border-radius:12px;padding:16px;margin:12px 0}
+input,textarea,button,select{border-radius:8px;border:1px solid #33415e;background:#0f1522;color:#e6e9f0;padding:10px;font-size:15px}
+input,textarea{width:100%}
+textarea{min-height:70px;margin-top:8px}
+button{background:#3b82f6;border:none;cursor:pointer;font-weight:700;margin-top:8px}
+button:disabled{opacity:.5}
+code,.key{font-family:ui-monospace,SFMono-Regular,monospace;background:#0f1522;padding:2px 6px;border-radius:6px;word-break:break-all}
+pre{white-space:pre-wrap;background:#0f1522;padding:12px;border-radius:8px;overflow:auto;max-height:340px}
+a{color:#7fb3ff}
+.small{font-size:13px;color:#9aa7c2}
+.grid{display:grid;gap:12px}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+footer{margin:24px 0;color:#9aa7c2;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1 style="margin:0">🔑 Magnum v4 72B — Free API Key Portal</h1>
+<span class="badge">anthracite-org/magnum-v4-72b</span>
+<span class="badge" id="mode">static free demo</span>
+</header>
+<p>This page issues <b>your own</b> free demo keys (<code>mk-…</code>) in this browser via <code>localStorage</code>. It does <b>not</b> mint real OpenRouter / Anthropic / OpenAI keys. For live model calls, bring your own upstream key from a free tier (OpenRouter, Hugging Face Inference, or Puter.js user-pays). Full local gateway with OpenAI-compatible <code>POST /v1/chat/completions</code> lives in <code>magnum-key-portal/server.js</code>.</p>
+
+<div class="grid">
+<div class="card">
+<h3 style="margin-top:0">1. Create a free key</h3>
+<input id="name" value="my-app" aria-label="key name" placeholder="key name"/>
+<button id="create">Create key</button>
+<pre id="newkey">No key yet — press Create key.</pre>
+<p class="small">Quota: 50,000 demo tokens per key, tracked locally. Stored only in your browser.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">2. Test chat (offline mock)</h3>
+<input id="key" aria-label="api key" placeholder="paste mk-... key"/>
+<textarea id="msg" aria-label="message">Explain quantum computing in simple terms</textarea>
+<button id="send">Send</button>
+<pre id="out">Response appears here.</pre>
+</div>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">3. Wire to your studio app 📱</h3>
+<p><b>Option A — phone-ready now (recommended):</b><br/>Model: <code>anthracite-org/magnum-v4-72b</code><br/>Base URL: <code>https://openrouter.ai/api/v1</code><br/>Key: <code>sk-or-YOUR-KEY</code> (from <a href="https://openrouter.ai/keys">openrouter.ai/keys</a>)</p>
+<p><b>Option B — via portal gateway (same WiFi):</b><br/>Run <code>PORT=3002 node magnum-key-portal/server.js</code> on your PC, create a <code>mk-...</code> key, then Base URL: <code>http://YOUR-PC-IP:3002/v1</code>, Key: <code>mk-...</code></p>
+<p class="small">Full copy-paste JSON: <a href="/wire.json">wire.json</a>. Runner <code>mk-...</code> keys live only on the machine running the gateway — create your own on your PC. Without <code>OPENROUTER_API_KEY</code> the gateway returns mock demo text.</p>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">4. Use from code</h3>
+<pre id="snippet">Create a key above to see your snippet.</pre>
+<p class="small">Live gateway: <code>OPENROUTER_API_KEY=sk-or-... PORT=3002 node magnum-key-portal/server.js</code>, then <code>POST /v1/chat/completions</code> with <code>Authorization: Bearer mk-...</code> and <code>model: anthracite-org/magnum-v4-72b</code>.</p>
+<p class="small">Free upstream: <a href="https://openrouter.ai/anthracite-org/magnum-v4-72b">OpenRouter model page</a> · <a href="https://huggingface.co/anthracite-org/magnum-v4-72b">Hugging Face weights</a> · <a href="https://developer.puter.com/ai/anthracite-org/magnum-v4-72b/">Puter.js docs</a></p>
+</div>
+
+<footer>Static preview build · source in <code>magnum-key-portal/</code> · built output in <code>dist/</code></footer>
+
+<script>
+const $=(id)=>document.getElementById(id);
+const QUOTA=50000;
+const store={
+  load(){try{return JSON.parse(localStorage.getItem('mk-keys')||'[]')}catch{return[]}},
+  save(k){localStorage.setItem('mk-keys',JSON.stringify(k))}
+};
+function mkKey(){
+  const b=new Uint8Array(24);crypto.getRandomValues(b);
+  let s='';for(const x of b){s+='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_ '[x%64]}
+  return 'mk-'+s.replace(/ /g,'A');
+}
+function mockReply(q){
+  const excerpt=String(q||'Hello').slice(0,300);
+  return '[STATIC free demo] You asked: "'+excerpt+'"\n\nTo go live:\n1. Get an upstream key (OpenRouter / Hugging Face / Puter).\n2. Run: OPENROUTER_API_KEY=sk-or-... PORT=3002 node magnum-key-portal/server.js\n3. Keep using the same mk-... key — the gateway proxies to anthracite-org/magnum-v4-72b.\n\nYour mk-... keys are free keys for your own gateway (quota-tracked). They are not OpenRouter/Anthropic keys.';
+}
+$('create').onclick=()=>{
+  const keys=store.load();
+  const key=mkKey();
+  const rec={name:($('name').value||'my-app').slice(0,60),key,created:new Date().toISOString(),quota:QUOTA,used:0};
+  keys.push(rec);store.save(keys);
+  $('newkey').textContent='KEY (copy now): '+key+'\nName: '+rec.name+'\nQuota: '+QUOTA+' tokens';
+  $('key').value=key;
+  $('snippet').textContent='curl http://localhost:3002/v1/chat/completions \\\n  -H "Content-Type: application/json" \\\n  -H "Authorization: Bearer '+key+'" \\\n  -d \'{"model":"anthracite-org/magnum-v4-72b","messages":[{"role":"user","content":"Hello"}]}\'\n\n# Python (OpenAI SDK)\nfrom openai import OpenAI\nclient = OpenAI(base_url="http://localhost:3002/v1", api_key="'+key+'")\nprint(client.chat.completions.create(model="anthracite-org/magnum-v4-72b",\n  messages=[{"role":"user","content":"Hello"}]).choices[0].message.content)';
+};
+$('send').onclick=()=>{
+  const k=$('key').value.trim();
+  if(!k.startsWith('mk-')){$('out').textContent='Create a key first (must start with mk-).';return}
+  $('out').textContent=mockReply($('msg').value);
+};
+</script>
+</body>
+</html>

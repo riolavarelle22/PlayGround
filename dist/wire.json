@@ -1,0 +1,23 @@
+{
+  "model": "anthracite-org/magnum-v4-72b",
+  "optionA_phone_ready_direct": {
+    "label": "Use this on your phone now (recommended)",
+    "modelIdentifier": "anthracite-org/magnum-v4-72b",
+    "apiBaseUrl": "https://openrouter.ai/api/v1",
+    "apiKey": "sk-or-YOUR-OPENROUTER-KEY",
+    "note": "Get key at https://openrouter.ai/keys. Works from phone, no PC needed. Paid after free credits; mock portal keys (mk-...) will NOT work here."
+  },
+  "optionB_via_portal": {
+    "label": "Via this portal gateway (needs your own PC on same WiFi)",
+    "modelIdentifier": "anthracite-org/magnum-v4-72b",
+    "apiBaseUrl": "http://<YOUR-PC-LAN-IP>:3002/v1",
+    "apiKey": "mk-YOUR-KEY-FROM-PORTAL",
+    "steps": [
+      "On your PC: PORT=3002 node magnum-key-portal/server.js",
+      "On your PC: open http://localhost:3002, Create key, copy mk-...",
+      "Find PC LAN IP: Windows ipconfig / Linux hostname -I (e.g. 192.168.1.42)",
+      "On phone studio app: Model=anthracite-org/magnum-v4-72b, Base=http://192.168.1.42:3002/v1, Key=mk-...",
+      "Without OPENROUTER_API_KEY the gateway returns mock demo text. For real Magnum: OPENROUTER_API_KEY=sk-or-... PORT=3002 node magnum-key-portal/server.js"
+    ]
+  }
+}

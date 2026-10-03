@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Magnum v4 72B — Free API Key Portal</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;background:#0b0e14;color:#e6e9f0}
+.card{background:#151b28;border:1px solid #263049;border-radius:12px;padding:16px;margin:12px 0}
+input,textarea,button{border-radius:8px;border:1px solid #33415e;background:#0f1522;color:#e6e9f0;padding:10px}
+button{background:#3b82f6;border:none;cursor:pointer;font-weight:600}
+button:disabled{opacity:.5}
+code,.key{font-family:ui-monospace,monospace;background:#0f1522;padding:2px 6px;border-radius:6px}
+pre{white-space:pre-wrap;background:#0f1522;padding:12px;border-radius:8px;overflow:auto}
+a{color:#7fb3ff}
+.small{font-size:13px;color:#9aa7c2}
+</style>
+</head>
+<body>
+<h1>🔑 Magnum v4 72B — Free API Key Portal</h1>
+<p class="small">Issues <b>your own</b> free keys (<code>mk-...</code>) for <b>this gateway</b>. Model: <code>anthracite-org/magnum-v4-72b</code>. This site does <b>not</b> mint OpenRouter/Anthropic keys — bring your own upstream key for live calls. Without one it runs in free mock-demo mode.</p>
+
+<div class="card">
+<h3>1. Create a free key</h3>
+<input id="name" placeholder="key name (e.g. my-app)" value="my-app"/>
+<button id="create">Create key</button>
+<pre id="newkey">No key yet.</pre>
+</div>
+
+<div class="card">
+<h3>2. Test chat (OpenAI-compatible)</h3>
+<input id="key" placeholder="paste mk-... key" style="width:100%"/>
+<textarea id="msg" style="width:100%;height:70px;margin-top:8px">Explain quantum computing in simple terms</textarea><br/><br/>
+<button id="send">Send</button>
+<pre id="out">Response appears here.</pre>
+</div>
+
+<div class="card">
+<h3>3. Use from code</h3>
+<pre id="snippet">Create a key first to see your snippet.</pre>
+<p class="small">Live mode: <code>OPENROUTER_API_KEY=sk-or-... PORT=3002 node server.js</code>. Free upstream options: OpenRouter dashboard, Hugging Face Inference (HF token), Puter.js user-pays.</p>
+<p><a href="/api/info">GET /api/info</a> · <a href="/v1/models">GET /v1/models</a></p>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
