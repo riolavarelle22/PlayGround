@@ -1,0 +1,14 @@
+{
+  "name": "free-api",
+  "version": "1.0.0",
+  "description": "Free API gateway - issue your own free API keys and use anthracite-org/magnum-v4-72b from any website via an OpenAI-compatible URL",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

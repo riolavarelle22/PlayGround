@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>free-api — free keys + website-ready URL for magnum-v4-72b</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  code, pre { background: #f4f4f4; padding: .2em .4em; border-radius: 6px; }
+  pre { padding: 1em; overflow: auto; }
+  .card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem; margin: 1rem 0; }
+  input, button, textarea { font-size: 1rem; padding: .5rem; margin: .25rem 0; }
+  input, textarea { width: 100%; box-sizing: border-box; }
+  button { cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>free-api</h1>
+<p>Your own gateway: issue <b>free API keys</b> and call <code>anthracite-org/magnum-v4-72b</code> from any website via an OpenAI-compatible URL.</p>
+<p id="status">checking /health…</p>
+
+<div class="card">
+  <h3>1. Create a free gateway key (needs admin token)</h3>
+  <input id="admin" placeholder="x-admin-token (ADMIN_TOKEN)" />
+  <input id="keyname" placeholder="key name, e.g. my-website" value="my-website" />
+  <button onclick="createKey()">Create key</button>
+  <pre id="keyout">(key will appear here)</pre>
+</div>
+
+<div class="card">
+  <h3>2. Test chat (uses your gateway key)</h3>
+  <input id="gwkey" placeholder="paste sk-free-... key" />
+  <textarea id="msg" rows="3">Hello, who are you?</textarea>
+  <button onclick="chat()">Send</button>
+  <pre id="chatout">(reply will appear here)</pre>
+</div>
+
+<div class="card">
+  <h3>3. Use in your website</h3>
+  <p>Base URL: <code id="baseurl">/v1</code></p>
+<pre><code>const BASE = location.origin + "/v1"; // or http://localhost:8787/v1
+const KEY = "sk-free-PASTE-YOURS";
+
+const r = await fetch(BASE + "/chat/completions", {
+  method: "POST",
+  headers: { "content-type": "application/json", "authorization": "Bearer " + KEY },
+  body: JSON.stringify({
+    model: "anthracite-org/magnum-v4-72b",
+    messages: [{ role: "user", content: "Hello!" }]
+  })
+});
+const data = await r.json();
+console.log(data.choices[0].message.content);</code></pre>
+  <p><b>Honest note:</b> gateway keys/URL are free &amp; unlimited. The model itself costs money on hosted providers (e.g. OpenRouter ~$2.50/$5 per 1M tokens) unless you run it locally with Ollama. Without an upstream key this server returns a clearly-labeled MOCK so you can build for free.</p>
+</div>
+
+<script>
+const base = location.origin;
+document.getElementById("baseurl").textContent = base + "/v1";
+fetch(base + "/health").then(r => r.json()).then(h => {
+  document.getElementById("status").textContent =
+    "health: model=" + h.model + " upstream=" + h.upstream + " mockMode=" + h.mockMode;
+}).catch(e => document.getElementById("status").textContent = "health check failed: " + e);
+
+async function createKey() {
+  const admin = document.getElementById("admin").value;
+  const name = document.getElementById("keyname").value || "my-website";
+  const r = await fetch(base + "/v1/keys", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-admin-token": admin },
+    body: JSON.stringify({ name })
+  });
+  const j = await r.json();
+  document.getElementById("keyout").textContent = JSON.stringify(j, null, 2);
+  if (j.key) document.getElementById("gwkey").value = j.key;
+}
+async function chat() {
+  const key = document.getElementById("gwkey").value;
+  const msg = document.getElementById("msg").value;
+  const r = await fetch(base + "/v1/chat/completions", {
+    method: "POST",
+    headers: { "content-type": "application/json", "authorization": "Bearer " + key },
+    body: JSON.stringify({ model: "anthracite-org/magnum-v4-72b", messages: [{ role: "user", content: msg }] })
+  });
+  const j = await r.json();
+  document.getElementById("chatout").textContent = JSON.stringify(j, null, 2);
+}
+</script>
+</body>
+</html>
